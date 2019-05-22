@@ -27,7 +27,7 @@ function GameManager(size) {
   // this.setup();
   console.log(this.grid.cells)
 
-  // this.getInitScoreboard();
+  this.getInitScoreboard();
   //update the scoreboard
   setInterval(this.getScoreboard, 3000)
 
@@ -204,7 +204,7 @@ GameManager.prototype.save = function () {
 GameManager.prototype.getScoreboard = function(){
   var self = this;
 
-  this.scoreboardContainer = document.querySelector(".scoreboard-container");
+  this.scoreboardContainer = document.getElementById("current-score");
   console.log(this.scoreboardContainer)
   // get the high scores list
   var request = new XMLHttpRequest();
@@ -232,33 +232,36 @@ GameManager.prototype.getScoreboard = function(){
   request.send();
 };
 
-// GameManager.prototype.getInitScoreboard = function(){
-//   var k = 0;
-//   var self = this;
+GameManager.prototype.getInitScoreboard = function(){
+  var self = this;
 
-//   this.scoreboardContainer = document.querySelector(".scoreboard-container");
-//   console.log(this.scoreboardContainer)
-//   // get the high scores list
-//   var request = new XMLHttpRequest();
-//   request.open("GET", "/api/high_scores");
-//   request.responseType = 'json';
-//   request.onload = () => {
-//     // gameId and highScore
-//     this.scoreboard = request.response;
+  this.oldScoreboardContainer = document.getElementById("old-scoreboard-container");
+  // get the high scores list
+  var request = new XMLHttpRequest();
+  request.open("GET", "/api/high_scores");
+  request.responseType = 'json';
+  request.onload = () => {
+    // gameId and highScore
+    this.scoreboard = request.response;
 
-//       for (k = 0; k < this.scoreboard.length; k++) {
-//         this.scoreboardContainer.innerHTML = '';
-//         // print the first 10 highscore
-//         for (var i = 0;  i < 10; i++){
-//             if (this.scoreboard[k][i] != null){
-//                 // create html properties and add them to index
-//                 var p = document.createElement("p")
-//                 p.innerHTML += (i + 1 +". " + this.scoreboard[k][i][0] + " : "+ this.scoreboard[k][i][1]);
-//                 this.scoreboardContainer.appendChild(p);
-//             }
-//         };
-//     }
-//     }
-//   request.send();
-//   return k;
-// };
+      this.oldScoreboardContainer.innerHTML = '';
+
+      for (var k = 0; k < this.scoreboard.length; k++) {
+        var div = document.createElement('div');
+        div.classList.add('scoreboard-container');
+        div.innerHTML = this.scoreboard[k].name;
+        // print the first 10 highscore
+        for (var i = 0;  i < 10; i++){
+            var row = this.scoreboard[k].scores[i];
+            if (row != null){
+                // create html properties and add them to index
+                var p = document.createElement("p")
+                p.innerHTML += (i + 1 +". " + row[0] + " : "+ row[1]);
+                div.appendChild(p);
+            }
+        };
+        this.oldScoreboardContainer.appendChild(div);
+    }
+    }
+  request.send();
+};
