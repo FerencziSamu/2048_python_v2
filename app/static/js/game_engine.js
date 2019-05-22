@@ -33,6 +33,9 @@ function GameManager(size) {
 
   //update time
   setInterval(this.updateTime, 1000)
+
+  //team score update
+  setInterval(this.getTeamScore, 5000)
 }
 
 GameManager.prototype.updateTime = function() {
@@ -262,6 +265,31 @@ GameManager.prototype.getInitScoreboard = function(){
         };
         this.oldScoreboardContainer.appendChild(div);
     }
+    }
+  request.send();
+};
+
+GameManager.prototype.getTeamScore = function(){
+  var self = this;
+
+  this.teamContainer = document.getElementById("team-container");
+  console.log(this.teamContainer)
+  // get the high scores list
+  var request = new XMLHttpRequest();
+  request.open("GET", "/api/high_scores/team");
+  request.responseType = 'json';
+  request.onload = () => {
+    // gameId and highScore
+    this.teamScore = request.response;
+
+    this.teamContainer.innerHTML = '';
+    // print the first 10 highscore
+    for (var i = 0;  i < teamScore.length; i++){
+        // create html properties and add them to index
+        var p = document.createElement("p")
+        p.innerHTML += (this.teamScore[i].name + " : "+ this.teamScore[i].score);
+        this.teamContainer.appendChild(p);
+    };
     }
   request.send();
 };
