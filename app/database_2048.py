@@ -33,3 +33,11 @@ def delete_from_db(time):
     c.execute("DELETE FROM game_obj WHERE expires_at<?", (time, ))
     conn.commit()
     conn.close()
+
+
+# def get_high_scores(time_1, time_2):
+#     conn = sqlite3.connect('app/database.db')
+#     c = conn.cursor()
+#     c.execute("SELECT team_name,c_score FROM game_obj WHERE expires_at<? AND expires_at>?", (time_1, time_2))
+#     conn.commit()
+#     conn.close()
