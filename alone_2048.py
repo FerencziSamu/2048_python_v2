@@ -63,7 +63,7 @@ def current_score():
 
 @app.route('/api/high_scores')
 def all_score():
-    intervals = Interval.query.filter_by(valid=True).all()
+    intervals = Interval.query.filter_by(valid=True).filter_by(active=False).all()
     if intervals is None:
         return "There is no internal"
     scores = []
@@ -77,7 +77,7 @@ def all_score():
 team_config = [
     {"name": "FlyWheel", "filter": "fw%"},
     {"name": "C", "filter": "C%"},
-    {"name": "Menyet", "filter": "menyet%"},
+    {"name": "Menyet", "filter": "meny%"},
 ]
 
 
