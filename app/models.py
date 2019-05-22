@@ -24,6 +24,7 @@ class Game_obj(db.Model):
     board = Column(ArrayType())
     c_score = db.Column(db.Integer)
     expires_at = Column(DateTime)
+    step_count = db.Column(db.Integer)
     interval_id = db.Column(db.Integer, db.ForeignKey('interval.id'))
 
 

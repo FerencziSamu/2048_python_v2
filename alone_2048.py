@@ -23,18 +23,23 @@ def play_the_game():
     moved = b.process_move(direction)
     legit = b.next_step_check()
     c_score = b.c_score
+    step_count = z.step_count
     if legit:
         if moved and b.count_zeroes() != 0:
             b.add_number()
+            step_count += 1
             Game_obj.query.filter_by(uId=uId).update(dict(board=board))
             Game_obj.query.filter_by(uId=uId).update({"c_score": c_score})
+            Game_obj.query.filter_by(uId=uId).update({"step_count": step_count})
             game_data = {"board": board, "c_score": c_score, "uId": uId, "game_over": False}
             game_dict = jsonify(game_data)
             db.session.commit()
             return game_dict
         elif moved:
+            step_count += 1
             Game_obj.query.filter_by(uId=uId).update(dict(board=board))
             Game_obj.query.filter_by(uId=uId).update({"c_score": c_score})
+            Game_obj.query.filter_by(uId=uId).update({"step_count": step_count})
             game_data = {"board": board, "c_score": c_score, "uId": uId, "game_over": False}
             game_dict = jsonify(game_data)
             db.session.commit()
@@ -89,7 +94,7 @@ def team_score():
     team_scores = [{"name": team["name"], "score": 0} for team in team_config]
     for interval in intervals:
         for team in team_config:
-            games = Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"]))\
+            games = Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"])) \
                 .all()
             summa = 0
             for game in games:
@@ -115,14 +120,14 @@ def new_game():
     c_score = b.c_score
     if interval is None:
         game_obj = Game_obj(team_name=team_name, uId=uId, c_score=c_score, board=board, expires_at=expires_at,
-                            interval_id=None)
+                            interval_id=None, step_count=0)
         db.session.add(game_obj)
         db.session.commit()
         game_data = {"board": board, "c_score": c_score, "uId": uId}
         game_dict = jsonify(game_data)
         return game_dict
     game_obj = Game_obj(team_name=team_name, uId=uId, c_score=c_score, board=board, expires_at=expires_at,
-                        interval_id=interval.id)
+                        interval_id=interval.id, step_count=0)
     game_data = {"board": board, "c_score": c_score, "uId": uId}
     game_dict = jsonify(game_data)
     db.session.add(game_obj)
@@ -147,8 +152,8 @@ def start_interval():
 @app.route('/stop_interval')
 def stop_interval():
     stop = datetime.now()
-    Interval.query.filter_by(active=True).update({"active": False})
     Interval.query.filter_by(active=True).update({"end_time": stop})
+    Interval.query.filter_by(active=True).update({"active": False})
     db.session.commit()
     return "Stopped!"
 
