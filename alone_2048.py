@@ -55,13 +55,13 @@ def play_the_game():
 
 @app.route('/api/high_scores')
 def games():
-    interval = []
-    now = datetime.now()
-    print(now)
-    result = Game_obj.query.filter(Game_obj.expires_at > now)
-    print(result[0].expires_at)
-    scores = database_2048.get_high_scores_from_db()
-    return jsonify(scores)
+    starttime = datetime.strptime("2019.05.22 17:00:00", "%Y.%m.%d %H:%M:%S")
+    endtime = datetime.strptime("2019.05.22 17:10:00", "%Y.%m.%d %H:%M:%S")
+    result = Game_obj.query.filter(Game_obj.expires_at > starttime, Game_obj.expires_at < endtime).query.all()
+
+    # scores = database_2048.get_high_scores_from_db()
+    print(result)
+    return result
 
 
 @app.route('/api/new_game', methods=['POST'])
