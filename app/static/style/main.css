@@ -33,7 +33,7 @@ body {
   }
 
 .scoreboard {
-  width : 200px;
+  width : 100%;
   margin: 0px 50px;
   display: inline-block;
   float : left;}
@@ -48,8 +48,30 @@ body {
   color: white;
   margin-top: 8px;
   text-align: left;
+  width: 200px;
+  float: left;
+  margin-right: 8px;
 }
 
+.old-scoreboard-container {
+    width: 100%;
+}
+
+#current-score {
+    background-color: red;
+    width: 300px;
+}
+
+#team-container {
+    color: white;
+    position: fixed;
+    right: 0px;
+    top: 0px;
+    width: 300px;
+    background-color: green;
+    padding-left: 20px;
+    border-radius: 0px 0px 0px 10px;
+}
 
 h1.title {
   font-size: 80px;

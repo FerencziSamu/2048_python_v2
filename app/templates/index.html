@@ -20,6 +20,7 @@
   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0, maximum-scale=1, user-scalable=no, minimal-ui">
 </head>
 <body>
+    <div style="position: fixed, top: 0" id="time">Server time:</div>
 <div class ="wrapper">
   <!-- <div class="container"> -->
   <!--   <div class="heading"> -->
@@ -95,9 +96,12 @@
     <div class = "scoreboard-name">
       <strong class="important">Scoreboard:</strong>
     <div>
-    <div class = "scoreboard-container"><div>
+    <div id="current-score" class="scoreboard-container"></div>
+    <div id="old-scoreboard-container"></div>
   </div>
 </div>
+
+<div id="team-container"></div>
 
   <script src="static/js/bind_polyfill.js"></script>
   <script src="static/js/classlist_polyfill.js"></script>

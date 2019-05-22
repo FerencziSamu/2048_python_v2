@@ -24,3 +24,16 @@ class Game_obj(db.Model):
     board = Column(ArrayType())
     c_score = db.Column(db.Integer)
     expires_at = Column(DateTime)
+    step_count = db.Column(db.Integer)
+    interval_id = db.Column(db.Integer, db.ForeignKey('interval.id'))
+    game_over = db.Column(db.Boolean, nullable=False, default=False)
+
+
+class Interval(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    start_time = db.Column(DateTime)
+    end_time = db.Column(DateTime, nullable=True)
+    active = db.Column(db.Boolean, nullable=False, default=False)
+    valid = db.Column(db.Boolean, nullable=False, default=True)
+    games = db.relationship('Game_obj')

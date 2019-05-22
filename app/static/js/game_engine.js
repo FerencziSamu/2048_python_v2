@@ -27,8 +27,21 @@ function GameManager(size) {
   // this.setup();
   console.log(this.grid.cells)
 
+  this.getInitScoreboard();
   //update the scoreboard
-  setInterval(this.getScoreboard, 1000)
+  setInterval(this.getScoreboard, 3000)
+
+  //update time
+  setInterval(this.updateTime, 1000)
+
+  //team score update
+  setInterval(this.getTeamScore, 5000)
+}
+
+GameManager.prototype.updateTime = function() {
+    var timeDiv = document.getElementById('time');
+    var now = new Date();
+    timeDiv.innerHTML = `Server time: ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
 }
 
 
@@ -194,8 +207,47 @@ GameManager.prototype.save = function () {
 GameManager.prototype.getScoreboard = function(){
   var self = this;
 
-  this.scoreboardContainer = document.querySelector(".scoreboard-container");
-  console.log(this.scoreboardContainer)
+  this.scoreboardContainer = document.getElementById("current-score");
+  // get the high scores list
+  var request = new XMLHttpRequest();
+  request.open("GET", "/api/high_scores/current");
+  request.responseType = 'json';
+  request.onload = () => {
+    // gameId and highScore
+    this.scoreboard = request.response;
+
+    this.scoreboardContainer.innerHTML = '';
+    // print the first 10 highscore
+    for (var i = 0;  i < this.scoreboard.length; i++){
+      var team = this.scoreboard[i];
+      var title = document.createElement("p");
+      title.innerHTML = team.name;
+      this.scoreboardContainer.appendChild(title);
+
+      var list = document.createElement("ol");
+
+      for (var j = 0; j < team.scores.length; j++) {
+        // create html properties and add them to index
+        var p = document.createElement("li")
+        var dead = team.scores[j][2] ? " ✝": "";
+        var stepCount = team.scores[j][3] !== null ? ` [${team.scores[j][3]}]` : "";
+        p.innerHTML += (team.scores[j][0] + " : "+ team.scores[j][1] + stepCount + dead);
+        list.appendChild(p);
+      }
+
+      this.scoreboardContainer.appendChild(list);
+    };
+
+    console.log("high score:")
+    console.log(this.scoreboard)
+    }
+  request.send();
+};
+
+GameManager.prototype.getInitScoreboard = function(){
+  var self = this;
+
+  this.oldScoreboardContainer = document.getElementById("old-scoreboard-container");
   // get the high scores list
   var request = new XMLHttpRequest();
   request.open("GET", "/api/high_scores");
@@ -204,20 +256,49 @@ GameManager.prototype.getScoreboard = function(){
     // gameId and highScore
     this.scoreboard = request.response;
 
-    this.scoreboardContainer.innerHTML = '';
-    // print the first 10 highscore
-    for (var i = 0;  i < 10; i++){
+      this.oldScoreboardContainer.innerHTML = '';
 
-      if (this.scoreboard[i] != null){
+      for (var k = 0; k < this.scoreboard.length; k++) {
+        var div = document.createElement('div');
+        div.classList.add('scoreboard-container');
+        div.innerHTML = this.scoreboard[k].name;
+        // print the first 10 highscore
+        for (var i = 0;  i < 10; i++){
+            var row = this.scoreboard[k].scores[i];
+            if (row != null){
+                // create html properties and add them to index
+                var p = document.createElement("p")
+                p.innerHTML += (i + 1 +". " + row[0] + " : "+ row[1]);
+                div.appendChild(p);
+            }
+        };
+        this.oldScoreboardContainer.appendChild(div);
+    }
+    }
+  request.send();
+};
+
+GameManager.prototype.getTeamScore = function(){
+  var self = this;
+
+  this.teamContainer = document.getElementById("team-container");
+  console.log(this.teamContainer)
+  // get the high scores list
+  var request = new XMLHttpRequest();
+  request.open("GET", "/api/high_scores/team");
+  request.responseType = 'json';
+  request.onload = () => {
+    // gameId and highScore
+    this.teamScore = request.response;
+
+    this.teamContainer.innerHTML = '';
+    // print the first 10 highscore
+    for (var i = 0;  i < teamScore.length; i++){
         // create html properties and add them to index
         var p = document.createElement("p")
-        p.innerHTML += (i + 1 +". " + this.scoreboard[i][0] + " : "+ this.scoreboard[i][1]);
-        this.scoreboardContainer.appendChild(p);
-      }
+        p.innerHTML += (this.teamScore[i].name + " : "+ this.teamScore[i].score);
+        this.teamContainer.appendChild(p);
     };
-
-    console.log("high score:")
-    console.log(this.scoreboard)
     }
   request.send();
 };
