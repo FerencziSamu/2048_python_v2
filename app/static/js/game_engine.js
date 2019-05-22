@@ -229,7 +229,8 @@ GameManager.prototype.getScoreboard = function(){
       for (var j = 0; j < team.scores.length; j++) {
         // create html properties and add them to index
         var p = document.createElement("li")
-        p.innerHTML += (team.scores[j][0] + " : "+ team.scores[j][1]);
+        var dead = team.scores[j][2] ? " ✝": "";
+        p.innerHTML += (team.scores[j][0] + " : "+ team.scores[j][1] + dead);
         list.appendChild(p);
       }
 

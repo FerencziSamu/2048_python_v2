@@ -25,6 +25,7 @@ class Game_obj(db.Model):
     c_score = db.Column(db.Integer)
     expires_at = Column(DateTime)
     interval_id = db.Column(db.Integer, db.ForeignKey('interval.id'))
+    game_over = db.Column(db.Boolean, nullable=False, default=False)
 
 
 class Interval(db.Model):
