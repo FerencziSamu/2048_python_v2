@@ -1,6 +1,6 @@
 import time
 from app import app, db, database_2048
-from app.models import Game_obj
+from app.models import Game_obj, Interval
 from game import *
 from flask import request, render_template, jsonify, send_file
 from datetime import datetime, timedelta
@@ -47,27 +47,35 @@ def play_the_game():
             return game_dict
     game_data = {"board": board, "c_score": c_score, "uId": uId, "game_over": True}
     game_dict = jsonify(game_data)
-    # u_name = "test"
-    # score = c_score
-    # database_2048.save_to_scores_db(u_name, score)
     return game_dict
 
 
-@app.route('/api/high_scores')
-def games():
-    starttime = datetime.strptime("2019.05.22 15:20:00", "%Y.%m.%d %H:%M:%S")
-    endtime = datetime.strptime("2019.05.22 15:40:00", "%Y.%m.%d %H:%M:%S")
-    result = Game_obj.query.filter(Game_obj.expires_at > starttime, Game_obj.expires_at < endtime).order_by(Game_obj.c_score.desc()).limit(10).all()
-    # scores = database_2048.get_high_scores_from_db()
-    # result = database_2048.get_high_scores(starttime, endtime)
+@app.route('/api/high_scores/current')
+def current_score():
+    interval = Interval.query.filter_by(active=True).first()
+    if interval is None:
+        return "There is no active internal"
+    result = Game_obj.query.filter_by(interval_id=interval.id).order_by(Game_obj.c_score.desc()).limit(10).all()
     ob = [[res.team_name, res.c_score] for res in result]
     return jsonify(ob)
+
+
+# @app.route('/api/high_scores')
+# def all_score():
+#     interval = Interval.query.all()
+#     if interval is None:
+#         return "There is no internal"
+#     obj = [[res.team_name, res.c_score] for res in result]
+#     result = Game_obj.query.filter_by(interval_id=interval.id).order_by(Game_obj.c_score.desc()).limit(10).all()
+#     ob = [[res.team_name, res.c_score] for res in result]
+#     return jsonify(ob)
 
 
 @app.route('/api/new_game', methods=['POST'])
 def new_game():
     resp = request.get_json()
     team_name = resp['team_name']
+    interval = Interval.query.filter_by(active=True).first()
     now = datetime.now()
     expires_at = now + timedelta(hours=3)
     b = Game(board=None, c_score=0)
@@ -75,12 +83,44 @@ def new_game():
     b.add_number()
     board = b.x
     c_score = b.c_score
-    game_obj = Game_obj(team_name=team_name, uId=uId, c_score=c_score, board=board, expires_at=expires_at)
+    if interval is None:
+        game_obj = Game_obj(team_name=team_name, uId=uId, c_score=c_score, board=board, expires_at=expires_at,
+                            interval_id=None)
+        db.session.add(game_obj)
+        db.session.commit()
+        game_data = {"board": board, "c_score": c_score, "uId": uId}
+        game_dict = jsonify(game_data)
+        return game_dict
+    game_obj = Game_obj(team_name=team_name, uId=uId, c_score=c_score, board=board, expires_at=expires_at,
+                        interval_id=interval.id)
     game_data = {"board": board, "c_score": c_score, "uId": uId}
     game_dict = jsonify(game_data)
     db.session.add(game_obj)
     db.session.commit()
     return game_dict
+
+
+@app.route('/start_interval', methods=['POST'])
+def start_interval():
+    is_active = Interval.query.filter_by(active=True).first()
+    if is_active is not None:
+        return "Mar van aktiv interval!"
+    resp = request.get_json()
+    name = resp['name']
+    start = datetime.now()
+    interval = Interval(name=name, start_time=start, end_time=None, active=True)
+    db.session.add(interval)
+    db.session.commit()
+    return str(interval.id)
+
+
+@app.route('/stop_interval')
+def stop_interval():
+    stop = datetime.now()
+    Interval.query.filter_by(active=True).update({"active": False})
+    Interval.query.filter_by(active=True).update(dict(end_time=stop))
+    db.session.commit()
+    return "gg"
 
 
 # @app.route('/save_user_highscore', methods=['POST', 'GET'])
