@@ -50,15 +50,25 @@ def play_the_game():
     game_dict = jsonify(game_data)
     return game_dict
 
+team_config = [
+    {"name": "FlyWheel", "filter": "fw%"},
+    {"name": "C", "filter": "C%"},
+    {"name": "Menyet", "filter": "meny%"},
+]
 
 @app.route('/api/high_scores/current')
 def current_score():
     interval = Interval.query.filter_by(active=True).first()
     if interval is None:
         return "There is no active internal"
-    result = Game_obj.query.filter_by(interval_id=interval.id).order_by(Game_obj.c_score.desc()).limit(10).all()
-    ob = [[res.team_name, res.c_score] for res in result]
-    return jsonify(ob)
+
+    result = [ { "name": team["name"], "scores": [] } for team in team_config ]
+    for team in team_config:
+        games = Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"])).order_by(Game_obj.c_score.desc()).limit(5).all()
+        for i in range(len(team_config)):
+            if result[i]["name"] == team["name"]:
+                result[i]["scores"] = [[ game.team_name, game.c_score ] for game in games ]
+    return jsonify(result)
 
 
 @app.route('/api/high_scores')
@@ -74,11 +84,6 @@ def all_score():
     return jsonify(scores)
 
 
-team_config = [
-    {"name": "FlyWheel", "filter": "fw%"},
-    {"name": "C", "filter": "C%"},
-    {"name": "Menyet", "filter": "meny%"},
-]
 
 
 @app.route('/api/high_scores/team')

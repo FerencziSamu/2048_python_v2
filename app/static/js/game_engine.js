@@ -208,7 +208,6 @@ GameManager.prototype.getScoreboard = function(){
   var self = this;
 
   this.scoreboardContainer = document.getElementById("current-score");
-  console.log(this.scoreboardContainer)
   // get the high scores list
   var request = new XMLHttpRequest();
   request.open("GET", "/api/high_scores/current");
@@ -219,14 +218,22 @@ GameManager.prototype.getScoreboard = function(){
 
     this.scoreboardContainer.innerHTML = '';
     // print the first 10 highscore
-    for (var i = 0;  i < 10; i++){
+    for (var i = 0;  i < this.scoreboard.length; i++){
+      var team = this.scoreboard[i];
+      var title = document.createElement("p");
+      title.innerHTML = team.name;
+      this.scoreboardContainer.appendChild(title);
 
-      if (this.scoreboard[i] != null){
+      var list = document.createElement("ol");
+
+      for (var j = 0; j < team.scores.length; j++) {
         // create html properties and add them to index
-        var p = document.createElement("p")
-        p.innerHTML += (i + 1 +". " + this.scoreboard[i][0] + " : "+ this.scoreboard[i][1]);
-        this.scoreboardContainer.appendChild(p);
+        var p = document.createElement("li")
+        p.innerHTML += (team.scores[j][0] + " : "+ team.scores[j][1]);
+        list.appendChild(p);
       }
+
+      this.scoreboardContainer.appendChild(list);
     };
 
     console.log("high score:")
