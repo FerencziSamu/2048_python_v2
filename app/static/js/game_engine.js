@@ -24,7 +24,7 @@ function GameManager(size) {
 
   // initialize a new board with "gameID"
   console.log("start a new game" + this.grid.cells)
-  this.setup();
+  // this.setup();
   console.log(this.grid.cells)
 
   //update the scoreboard
