@@ -230,7 +230,8 @@ GameManager.prototype.getScoreboard = function(){
         // create html properties and add them to index
         var p = document.createElement("li")
         var dead = team.scores[j][2] ? " ✝": "";
-        p.innerHTML += (team.scores[j][0] + " : "+ team.scores[j][1] + dead);
+        var stepCount = team.scores[j][3] !== null ? ` [${team.scores[j][3]}]` : "";
+        p.innerHTML += (team.scores[j][0] + " : "+ team.scores[j][1] + stepCount + dead);
         list.appendChild(p);
       }
 

@@ -72,7 +72,7 @@ def current_score():
         games = Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"])).order_by(Game_obj.c_score.desc()).limit(5).all()
         for i in range(len(team_config)):
             if result[i]["name"] == team["name"]:
-                result[i]["scores"] = [[ game.team_name, game.c_score, game.game_over] for game in games ]
+                result[i]["scores"] = [[ game.team_name, game.c_score, game.game_over, game.step_count] for game in games ]
     return jsonify(result)
 
 
