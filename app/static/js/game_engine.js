@@ -28,8 +28,7 @@ function GameManager(size) {
   console.log(this.grid.cells)
 
   //update the scoreboard
-  this.getScoreboard();
-
+  setInterval(this.getScoreboard, 1000)
 }
 
 
@@ -205,6 +204,7 @@ GameManager.prototype.getScoreboard = function(){
     // gameId and highScore
     this.scoreboard = request.response;
 
+    this.scoreboardContainer.innerHTML = '';
     // print the first 10 highscore
     for (var i = 0;  i < 10; i++){
 
