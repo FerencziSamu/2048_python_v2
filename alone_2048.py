@@ -53,6 +53,7 @@ def play_the_game():
             return game_dict
     game_data = {"board": board, "c_score": c_score, "uId": uId, "game_over": True}
     Game_obj.query.filter_by(uId=uId).update({"game_over": True})
+    db.session.commit()
     game_dict = jsonify(game_data)
     return game_dict
 
