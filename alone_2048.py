@@ -47,16 +47,16 @@ def play_the_game():
             return game_dict
     game_data = {"board": board, "c_score": c_score, "uId": uId, "game_over": True}
     game_dict = jsonify(game_data)
-    u_name = "test"
-    score = c_score
-    database_2048.save_to_scores_db(u_name, score)
+    # u_name = "test"
+    # score = c_score
+    # database_2048.save_to_scores_db(u_name, score)
     return game_dict
 
 
 @app.route('/api/high_scores')
 def games():
-    starttime = datetime.strptime("2019.05.22 17:00:00", "%Y.%m.%d %H:%M:%S")
-    endtime = datetime.strptime("2019.05.22 17:10:00", "%Y.%m.%d %H:%M:%S")
+    starttime = datetime.strptime("2019.05.22 15:20:00", "%Y.%m.%d %H:%M:%S")
+    endtime = datetime.strptime("2019.05.22 15:40:00", "%Y.%m.%d %H:%M:%S")
     result = Game_obj.query.filter(Game_obj.expires_at > starttime, Game_obj.expires_at < endtime).all()
     # scores = database_2048.get_high_scores_from_db()
     # result = database_2048.get_high_scores(starttime, endtime)
