@@ -33,4 +33,5 @@ class Interval(db.Model):
     start_time = db.Column(DateTime)
     end_time = db.Column(DateTime, nullable=True)
     active = db.Column(db.Boolean, nullable=False, default=False)
+    valid = db.Column(db.Boolean, nullable=False, default=True)
     games = db.relationship('Game_obj')
