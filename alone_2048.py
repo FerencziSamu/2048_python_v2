@@ -1,5 +1,5 @@
 import time
-from app import app, db, database_2048
+from app import app, db
 from app.models import Game_obj
 from game import *
 from flask import request, render_template, jsonify, send_file

@@ -24,6 +24,3 @@ class Game_obj(db.Model):
     board = Column(ArrayType())
     c_score = db.Column(db.Integer)
     expires_at = Column(DateTime)
-
-
-db.create_all()
