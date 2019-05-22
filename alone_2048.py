@@ -60,15 +60,17 @@ def current_score():
     return jsonify(ob)
 
 
-# @app.route('/api/high_scores')
-# def all_score():
-#     interval = Interval.query.all()
-#     if interval is None:
-#         return "There is no internal"
-#     obj = [[res.team_name, res.c_score] for res in result]
-#     result = Game_obj.query.filter_by(interval_id=interval.id).order_by(Game_obj.c_score.desc()).limit(10).all()
-#     ob = [[res.team_name, res.c_score] for res in result]
-#     return jsonify(ob)
+@app.route('/api/high_scores')
+def all_score():
+    intervals = Interval.query.all()
+    if intervals is None:
+        return "There is no internal"
+    scores = []
+    for interval in intervals:
+        result = Game_obj.query.filter_by(interval_id=interval.id).order_by(Game_obj.c_score.desc()).limit(10).all()
+        obj = [[res.team_name, res.c_score] for res in result]
+        scores.append({"name": interval.name, "scores": obj})
+    return jsonify(scores)
 
 
 @app.route('/api/new_game', methods=['POST'])
@@ -118,9 +120,9 @@ def start_interval():
 def stop_interval():
     stop = datetime.now()
     Interval.query.filter_by(active=True).update({"active": False})
-    Interval.query.filter_by(active=True).update(dict(end_time=stop))
+    Interval.query.filter_by(active=True).update({"end_time": stop})
     db.session.commit()
-    return "gg"
+    return "Stopped!"
 
 
 # @app.route('/save_user_highscore', methods=['POST', 'GET'])
