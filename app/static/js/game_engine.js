@@ -27,8 +27,18 @@ function GameManager(size) {
   // this.setup();
   console.log(this.grid.cells)
 
+  // this.getInitScoreboard();
   //update the scoreboard
-  setInterval(this.getScoreboard, 1000)
+  setInterval(this.getScoreboard, 3000)
+
+  //update time
+  setInterval(this.updateTime, 1000)
+}
+
+GameManager.prototype.updateTime = function() {
+    var timeDiv = document.getElementById('time');
+    var now = new Date();
+    timeDiv.innerHTML = `Server time: ${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`;
 }
 
 
@@ -198,7 +208,7 @@ GameManager.prototype.getScoreboard = function(){
   console.log(this.scoreboardContainer)
   // get the high scores list
   var request = new XMLHttpRequest();
-  request.open("GET", "/api/high_scores");
+  request.open("GET", "/api/high_scores/current");
   request.responseType = 'json';
   request.onload = () => {
     // gameId and highScore
@@ -221,3 +231,34 @@ GameManager.prototype.getScoreboard = function(){
     }
   request.send();
 };
+
+// GameManager.prototype.getInitScoreboard = function(){
+//   var k = 0;
+//   var self = this;
+
+//   this.scoreboardContainer = document.querySelector(".scoreboard-container");
+//   console.log(this.scoreboardContainer)
+//   // get the high scores list
+//   var request = new XMLHttpRequest();
+//   request.open("GET", "/api/high_scores");
+//   request.responseType = 'json';
+//   request.onload = () => {
+//     // gameId and highScore
+//     this.scoreboard = request.response;
+
+//       for (k = 0; k < this.scoreboard.length; k++) {
+//         this.scoreboardContainer.innerHTML = '';
+//         // print the first 10 highscore
+//         for (var i = 0;  i < 10; i++){
+//             if (this.scoreboard[k][i] != null){
+//                 // create html properties and add them to index
+//                 var p = document.createElement("p")
+//                 p.innerHTML += (i + 1 +". " + this.scoreboard[k][i][0] + " : "+ this.scoreboard[k][i][1]);
+//                 this.scoreboardContainer.appendChild(p);
+//             }
+//         };
+//     }
+//     }
+//   request.send();
+//   return k;
+// };
