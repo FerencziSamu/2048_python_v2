@@ -4,6 +4,7 @@ from app.models import Game_obj, Interval
 from game import *
 from flask import request, render_template, jsonify, send_file
 from datetime import datetime, timedelta
+from sqlalchemy.sql import text
 
 
 @app.route("/")
@@ -62,7 +63,7 @@ def current_score():
 
 @app.route('/api/high_scores')
 def all_score():
-    intervals = Interval.query.all()
+    intervals = Interval.query.filter_by(valid=True).all()
     if intervals is None:
         return "There is no internal"
     scores = []
@@ -71,6 +72,33 @@ def all_score():
         obj = [[res.team_name, res.c_score] for res in result]
         scores.append({"name": interval.name, "scores": obj})
     return jsonify(scores)
+
+
+team_config = [
+    {"name": "FlyWheel", "filter": "fw%"},
+    {"name": "C", "filter": "C%"},
+    {"name": "Menyet", "filter": "menyet%"},
+]
+
+
+@app.route('/api/high_scores/team')
+def team_score():
+    intervals = Interval.query.filter_by(valid=True).all()
+    if intervals is None:
+        return "There is no internal"
+    team_scores = [{"name": team["name"], "score": 0} for team in team_config]
+    for interval in intervals:
+        for team in team_config:
+            games = Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"]))\
+                .all()
+            summa = 0
+            for game in games:
+                summa += game.c_score
+
+            for i in range(len(team_scores)):
+                if team_scores[i]["name"] == team["name"]:
+                    team_scores[i]["score"] += summa
+    return jsonify(team_scores)
 
 
 @app.route('/api/new_game', methods=['POST'])
