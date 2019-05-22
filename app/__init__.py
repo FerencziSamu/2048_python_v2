@@ -1,5 +1,5 @@
 from datetime import datetime
-
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -16,7 +16,7 @@ def delete_from_db():
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'so amazingly secret'  # for session values
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
 scheduler = BackgroundScheduler({'apscheduler.timezone': 'Europe/Budapest', 'daemon': True})
 scheduler.add_jobstore('sqlalchemy', url='sqlite:////tmp/schedule.db')
