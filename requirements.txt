@@ -1,6 +1,6 @@
 apscheduler
+psycopg2
 sqlalchemy
 flask-sqlalchemy
 Flask==1.0.2
 gunicorn==19.7.1
-
