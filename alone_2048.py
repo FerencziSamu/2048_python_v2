@@ -57,7 +57,7 @@ def play_the_game():
 def games():
     starttime = datetime.strptime("2019.05.22 15:20:00", "%Y.%m.%d %H:%M:%S")
     endtime = datetime.strptime("2019.05.22 15:40:00", "%Y.%m.%d %H:%M:%S")
-    result = Game_obj.query.filter(Game_obj.expires_at > starttime, Game_obj.expires_at < endtime).all()
+    result = Game_obj.query.filter(Game_obj.expires_at > starttime, Game_obj.expires_at < endtime).order_by(Game_obj.c_score.desc()).limit(10).all()
     # scores = database_2048.get_high_scores_from_db()
     # result = database_2048.get_high_scores(starttime, endtime)
     ob = [[res.team_name, res.c_score] for res in result]
