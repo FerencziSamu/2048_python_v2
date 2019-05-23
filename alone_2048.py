@@ -97,6 +97,8 @@ def all_score():
 
 
 multipliers = [ 4, 3, 2 ]
+final_multipliers = [ 30, 20, 10 ]
+final_interval_name = "final"
 
 @app.route('/api/high_scores/team')
 def team_score():
@@ -119,7 +121,8 @@ def team_score():
         for (place, (name, score)) in enumerate(interval_scores):
             for i in range(len(team_scores)):
                 if team_scores[i]["name"] == name:
-                    team_scores[i]["score"] += score*multipliers[place]
+                    multi = final_multipliers[place] if interval.name == final_interval_name else multipliers[place]
+                    team_scores[i]["score"] += score*multi
     return jsonify(team_scores)
 
 
