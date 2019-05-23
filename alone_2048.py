@@ -82,7 +82,7 @@ def get_biggest_tile(game):
 
 @app.route('/api/high_scores')
 def all_score():
-    intervals = Interval.query.filter_by(valid=True).filter_by(active=False).all()
+    intervals = Interval.query.filter_by(valid=True).filter_by(active=False).order_by(Interval.id).all()
     if intervals is None:
         return "There is no internal"
     scores = []

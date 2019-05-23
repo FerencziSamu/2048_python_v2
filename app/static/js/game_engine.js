@@ -288,15 +288,17 @@ GameManager.prototype.getTeamScore = function(){
   request.open("GET", "/api/high_scores/team");
   request.responseType = 'json';
   request.onload = () => {
+    this.lastTeamScore = this.teamScore;
     // gameId and highScore
     this.teamScore = request.response;
 
     this.teamContainer.innerHTML = '';
     // print the first 10 highscore
-    for (var i = 0;  i < teamScore.length; i++){
+    for (var i = 0;  i < this.teamScore.length; i++){
         // create html properties and add them to index
         var p = document.createElement("p")
-        p.innerHTML += (this.teamScore[i].name + " : "+ this.teamScore[i].score);
+        var delta = this.lastTeamScore ? this.teamScore[i].score - this.lastTeamScore[i].score : "0";
+        p.innerHTML += (this.teamScore[i].name + " : "+ this.teamScore[i].score + " (delta: " + delta + ")" );
         this.teamContainer.appendChild(p);
     };
     }
