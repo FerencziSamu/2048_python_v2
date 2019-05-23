@@ -53,6 +53,10 @@ body {
   margin-right: 8px;
 }
 
+.scoreboard-container span {
+    color:black;
+}
+
 .old-scoreboard-container {
     width: 100%;
 }

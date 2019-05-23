@@ -261,14 +261,14 @@ GameManager.prototype.getInitScoreboard = function(){
       for (var k = 0; k < this.scoreboard.length; k++) {
         var div = document.createElement('div');
         div.classList.add('scoreboard-container');
-        div.innerHTML = this.scoreboard[k].name;
+        div.innerHTML = `<span>${this.scoreboard[k].name}</span>`;
         // print the first 10 highscore
         for (var i = 0;  i < 10; i++){
             var row = this.scoreboard[k].scores[i];
             if (row != null){
                 // create html properties and add them to index
                 var p = document.createElement("p")
-                p.innerHTML += (i + 1 +". " + row[0] + " : "+ row[1] + " (T: " + row[2] + ", S: " + row[3] + ")");
+                p.innerHTML += (i + 1 +". " + row[0] + " : "+ row[1] + " (T: " + row[2] + ", S: " + (row[3] || "N/A") + ")");
                 div.appendChild(p);
             }
         };
