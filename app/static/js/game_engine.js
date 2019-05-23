@@ -221,7 +221,7 @@ GameManager.prototype.getScoreboard = function(){
     for (var i = 0;  i < this.scoreboard.length; i++){
       var team = this.scoreboard[i];
       var title = document.createElement("p");
-      title.innerHTML = team.name;
+      title.innerHTML = `${team.name} (${team.running})`;
       this.scoreboardContainer.appendChild(title);
 
       var list = document.createElement("ol");
