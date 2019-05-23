@@ -77,6 +77,8 @@ def current_score():
                 result[i]["scores"] = [[ game.team_name, game.c_score, game.game_over, game.step_count] for game in games ]
     return jsonify(result)
 
+def get_biggest_tile(game):
+    return max([ cell for row in game.board for cell in row ]) 
 
 @app.route('/api/high_scores')
 def all_score():
@@ -86,7 +88,7 @@ def all_score():
     scores = []
     for interval in intervals:
         result = Game_obj.query.filter_by(interval_id=interval.id).order_by(Game_obj.c_score.desc()).limit(10).all()
-        obj = [[res.team_name, res.c_score] for res in result]
+        obj = [[res.team_name, res.c_score, get_biggest_tile(res), res.step_count] for res in result]
         scores.append({"name": interval.name, "scores": obj})
     return jsonify(scores)
 

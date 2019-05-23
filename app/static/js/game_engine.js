@@ -268,7 +268,7 @@ GameManager.prototype.getInitScoreboard = function(){
             if (row != null){
                 // create html properties and add them to index
                 var p = document.createElement("p")
-                p.innerHTML += (i + 1 +". " + row[0] + " : "+ row[1]);
+                p.innerHTML += (i + 1 +". " + row[0] + " : "+ row[1] + " (T: " + row[2] + ", S: " + row[3] + ")");
                 div.appendChild(p);
             }
         };
