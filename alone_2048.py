@@ -93,6 +93,9 @@ def all_score():
     return jsonify(scores)
 
 
+multipliers = [ 4, 3, 2 ]
+
+
 @app.route('/api/high_scores/team')
 def team_score():
     intervals = Interval.query.filter_by(valid=True).all()
@@ -100,6 +103,7 @@ def team_score():
         return "There is no internal"
     team_scores = [{"name": team["name"], "score": 0} for team in team_config]
     for interval in intervals:
+        interval_scores = []
         for team in team_config:
             games = Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"])) \
                 .all()
@@ -107,9 +111,13 @@ def team_score():
             for game in games:
                 summa += game.c_score
 
+            interval_scores.append((team["name"], summa))
+
+        interval_scores.sort(key=lambda tup: tup[1], reverse=True)
+        for (place, (name, score)) in enumerate(interval_scores):
             for i in range(len(team_scores)):
-                if team_scores[i]["name"] == team["name"]:
-                    team_scores[i]["score"] += summa
+                if team_scores[i]["name"] == name:
+                    team_scores[i]["score"] += score*multipliers[place]
     return jsonify(team_scores)
 
 

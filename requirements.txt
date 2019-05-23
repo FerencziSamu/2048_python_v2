@@ -1,4 +1,5 @@
 apscheduler
+psycopg2
 sqlalchemy
 psycopg2
 flask-sqlalchemy
