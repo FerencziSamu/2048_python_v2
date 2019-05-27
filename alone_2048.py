@@ -1,10 +1,9 @@
 import time
-from app import app, db, database_2048
+from app import app, db
 from app.models import Game_obj, Interval
 from game import *
 from flask import request, render_template, jsonify, send_file
 from datetime import datetime, timedelta
-from sqlalchemy.sql import text
 
 
 @app.route("/")
@@ -57,24 +56,27 @@ def play_the_game():
     game_dict = jsonify(game_data)
     return game_dict
 
+
 team_config = [
     {"name": "FlyWheel", "filter": "fw%"},
     {"name": "C", "filter": "C%"},
     {"name": "Menyet", "filter": "meny%"},
 ]
 
+
 @app.route('/api/high_scores/current')
 def current_score():
     interval = Interval.query.filter_by(active=True).first()
     if interval is None:
         return "There is no active internal"
-
-    result = [ { "name": team["name"], "scores": [] } for team in team_config ]
+    result = [{"name": team["name"], "scores": [], "running": Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"])).filter_by(game_over=False).count()} for team in team_config]
     for team in team_config:
-        games = Game_obj.query.filter_by(interval_id=interval.id).filter(Game_obj.team_name.like(team["filter"])).order_by(Game_obj.c_score.desc()).limit(5).all()
+        games = Game_obj.query.filter_by(interval_id=interval.id).filter(
+            Game_obj.team_name.like(team["filter"])).order_by(Game_obj.c_score.desc()).limit(5).all()
         for i in range(len(team_config)):
             if result[i]["name"] == team["name"]:
-                result[i]["scores"] = [[ game.team_name, game.c_score, game.game_over, game.step_count] for game in games ]
+                result[i]["scores"] = [[game.team_name, game.c_score, game.game_over, game.step_count] for game in
+                                       games]
     return jsonify(result)
 
 def get_biggest_tile(game):
@@ -82,7 +84,7 @@ def get_biggest_tile(game):
 
 @app.route('/api/high_scores')
 def all_score():
-    intervals = Interval.query.filter_by(valid=True).filter_by(active=False).all()
+    intervals = Interval.query.filter_by(valid=True).filter_by(active=False).order_by(Interval.id).all()
     if intervals is None:
         return "There is no internal"
     scores = []
@@ -92,9 +94,9 @@ def all_score():
         scores.append({"name": interval.name, "scores": obj})
     return jsonify(scores)
 
-
-multipliers = [4, 3, 2]
-
+multipliers = [ 4, 3, 2 ]
+final_multipliers = [ 30, 20, 10 ]
+final_interval_name = "final"
 
 @app.route('/api/high_scores/team')
 def team_score():
@@ -117,7 +119,8 @@ def team_score():
         for (place, (name, score)) in enumerate(interval_scores):
             for i in range(len(team_scores)):
                 if team_scores[i]["name"] == name:
-                    team_scores[i]["score"] += score*multipliers[place]
+                    multi = final_multipliers[place] if interval.name == final_interval_name else multipliers[place]
+                    team_scores[i]["score"] += score*multi
     return jsonify(team_scores)
 
 
@@ -172,15 +175,6 @@ def stop_interval():
     db.session.commit()
     return "Stopped!"
 
-
-# @app.route('/save_user_highscore', methods=['POST', 'GET'])
-# def save_user_highscore():
-#     resp = request.get_json()
-#     u_name = resp['u_name']
-#     c_score = resp['c_score']
-#     database_2048.save_to_scores_db(u_name, c_score)
-#     msg = "Saved!"
-#     return msg
 
 def download(path):
     return send_file(path, as_attachment=True)
