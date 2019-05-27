@@ -93,8 +93,8 @@ def all_score():
     return jsonify(scores)
 
 
+multipliers = [4, 3, 2]
 
-multipliers = [ 4, 3, 2 ]
 
 @app.route('/api/high_scores/team')
 def team_score():
